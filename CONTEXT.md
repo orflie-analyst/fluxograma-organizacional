@@ -87,7 +87,19 @@ Se dois usuários editarem o quadro ao mesmo tempo e uma atualização remota ch
 perdida (a atualização remota substitui `estado` inteiro). Baixo risco na prática —
 só 1-2 pessoas devem ter conta aqui — mas não é uma resolução de conflito de verdade.
 
-## Status
+## Status (2026-08-05)
 
-Em construção — ver o plano da sessão que criou este projeto para o histórico
-completo de decisões.
+**No ar e funcional**, testado ponta a ponta em produção:
+- GitHub Pages: https://orflie-analyst.github.io/fluxograma-organizacional/
+- Firebase: projeto `orflie-fluxograma` (conta @orflie.com), Firestore em
+  `southamerica-east1`.
+- Primeiro admin criado: `arnaldo.hungria@orflie.com` (mesmo processo de bootstrap
+  documentado no ServiceOrder — REST `accounts:signUp` + regra temporariamente
+  escopada pro uid + Firestore REST + reverter).
+- Testado no navegador: criar Conta/Operador, selecionar, conectar, desconectar
+  (toggle), excluir nó (conexão some junto), arrastar (posição persiste), e
+  sincronização em tempo real entre duas abas abertas simultaneamente — tudo
+  confirmado direto contra o Firestore de produção.
+- `admin.html` confirmado: tabela de usuários mostra Arnaldo como admin/ativo,
+  formulários de criar e editar presentes e funcionais (mesmo mecanismo de segunda
+  instância do Firebase App já validado no ServiceOrder).

@@ -1,8 +1,9 @@
 # Fluxograma Organizacional — Orflie
 
-Quadro interativo pra reuniões de diretoria: caixas de "Conta" (empresa cliente) e
-"Operador" que se arrastam e conectam, mostrando quem atende qual conta. Substitui o
-Excel/papel que o diretor usava antes. Leia este arquivo primeiro ao retomar o trabalho.
+Quadro interativo pra reuniões de diretoria: caixas de "Conta" (empresa cliente) e de
+colaborador — **SDR** (azul), **BDR** (roxo) ou **Closer** (verde) — que se arrastam e
+conectam, mostrando quem atende qual conta. Substitui o Excel/papel que o diretor
+usava antes. Leia este arquivo primeiro ao retomar o trabalho.
 
 Projeto irmão do [ServiceOrder](../ServiceOrder/CONTEXT.md) — mesma stack e boa parte
 do código reaproveitados de lá (`app/dom.js`, `style.css`/logo, padrão de `auth.js` e
@@ -28,7 +29,9 @@ do código reaproveitados de lá (`app/dom.js`, `style.css`/logo, padrão de `au
 - `usuarios/{uid}`: `nome`, `email`, `isAdmin`, `ativo`. Sem conceito de departamento
   — todo usuário com conta pode editar o quadro igualmente.
 - `quadro/principal` — **documento único, compartilhado** (não uma coleção):
-  - `nos`: array de `{id, tipo: 'conta' | 'operador', label, x, y}`
+  - `nos`: array de `{id, tipo: 'conta' | 'sdr' | 'bdr' | 'closer', label, x, y}` —
+    cores/swatches de cada tipo em `style.css` (`--cor-conta`/`--cor-sdr`/etc.) e na
+    legenda lateral de `quadro.html`.
   - `conexoes`: array de `{id, deId, paraId}`
   - `atualizadoEm`
 
@@ -46,15 +49,20 @@ sem granularidade por usuário, já que o admin curou quem tem conta.
 ## Páginas
 
 - `index.html` — login (sem opção de criar conta).
-- `quadro.html` — o quadro em si: toolbar "+ Conta"/"+ Operador" (usa `prompt()` pro
-  nome), nós arrastáveis (`<div>` posicionados em absoluto via `pointerdown`/
-  `pointermove`/`pointerup`, sem lib externa), conectar clicando em dois nós em
-  sequência (toggle), excluir via botão "×" no nó. `<svg>` sobreposto desenha as
-  linhas entre os centros dos nós conectados, recalculado a cada mudança de posição.
-  Autosave (grava o doc inteiro a cada mutação, sem botão "Salvar") + `onSnapshot`
-  pra sincronizar em tempo real entre abas/dispositivos abertos.
+- `quadro.html` — o quadro em si: toolbar "+ Conta"/"+ SDR"/"+ BDR"/"+ Closer" (usa
+  `prompt()` pro nome, mensagem diferente por tipo em `ROTULOS_PROMPT`), nós
+  arrastáveis (`<div>` posicionados em absoluto via `pointerdown`/`pointermove`/
+  `pointerup`, sem lib externa), conectar clicando em dois nós em sequência (toggle),
+  excluir via botão "×" no nó. `<svg>` sobreposto desenha as linhas entre os centros
+  dos nós conectados, recalculado a cada mudança de posição. Legenda lateral
+  (`.quadro-legenda`) explica a cor de cada tipo. Autosave (grava o doc inteiro a
+  cada mutação, sem botão "Salvar") + `onSnapshot` pra sincronizar em tempo real
+  entre abas/dispositivos abertos.
 - `admin.html` — CRUD de usuário (criar + editar nome/isAdmin/ativo), sem seção de
   departamentos (não existe aqui).
+- `conta.html` — qualquer usuário logado troca a própria senha (`trocarSenha()` em
+  `app/auth.js`: reautentica com a senha atual antes de chamar `updatePassword`,
+  porque o Firebase exige login "recente" pra essa operação).
 
 ## Gotchas conhecidos (herdados do ServiceOrder, aplicam aqui também)
 
@@ -103,3 +111,13 @@ só 1-2 pessoas devem ter conta aqui — mas não é uma resolução de conflito
 - `admin.html` confirmado: tabela de usuários mostra Arnaldo como admin/ativo,
   formulários de criar e editar presentes e funcionais (mesmo mecanismo de segunda
   instância do Firebase App já validado no ServiceOrder).
+
+**Atualização 2026-08-05 (mesmo dia, depois):** tipos de nó trocados de "Operador"
+genérico pra três papéis reais da Orflie — SDR/BDR/Closer, cada um com cor própria —
+com legenda lateral no quadro. Página `conta.html` adicionada pra troca de senha
+(testada: trocar, reverter, e confirmado que senha atual errada é rejeitada com
+`auth/invalid-credential`). Quadro populado com as 38 contas de
+`Clientes Ativos - Orflie.xlsx` (planilha em `Desktop\ARNALDO HUNGRIA`, lida com
+`openpyxl`) como nós tipo `conta`, em grid de 8 colunas — **substituindo** 7 contas
+de teste que já existiam no quadro (nomes em maiúsculas/abreviados, sem conexões,
+removidas por serem duplicatas inconsistentes das mesmas empresas da planilha).

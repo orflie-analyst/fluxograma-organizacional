@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Minha Conta · Fluxograma Organizacional Orflie</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<main>
+  <div class="card">
+    <h1>Minha Conta</h1>
+    <p class="meta" id="conta-email"></p>
+  </div>
+
+  <div class="card">
+    <h2>Trocar senha</h2>
+    <form id="form-senha">
+      <label for="senha-atual">Senha atual</label>
+      <input type="password" id="senha-atual" required autocomplete="current-password" />
+
+      <label for="senha-nova">Nova senha</label>
+      <input type="password" id="senha-nova" required minlength="6" autocomplete="new-password" />
+
+      <label for="senha-nova2">Confirmar nova senha</label>
+      <input type="password" id="senha-nova2" required minlength="6" autocomplete="new-password" />
+
+      <button class="btn" type="submit" id="btn-trocar-senha">Salvar nova senha</button>
+      <p class="erro hidden" id="erro-senha"></p>
+      <p class="hidden" id="sucesso-senha" style="color: var(--accent); font-size: 0.9rem; margin-top: 0.75rem;">Senha atualizada.</p>
+    </form>
+  </div>
+</main>
+
+<script type="module" src="app/conta.js"></script>
+</body>
+</html>

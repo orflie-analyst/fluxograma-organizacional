@@ -2,6 +2,9 @@ import {
   onAuthStateChanged,
   signInWithEmailAndPassword,
   signOut,
+  EmailAuthProvider,
+  reauthenticateWithCredential,
+  updatePassword,
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 import { auth, db } from "./firebase-init.js";
@@ -13,6 +16,16 @@ export function login(email, senha) {
 
 export function logout() {
   return signOut(auth);
+}
+
+// Troca a própria senha do usuário logado. Exige a senha atual porque o Firebase
+// só permite updatePassword logo após uma autenticação "recente" — reautentica
+// primeiro pra funcionar mesmo com a sessão aberta há horas.
+export async function trocarSenha(senhaAtual, novaSenha) {
+  const user = auth.currentUser;
+  const credential = EmailAuthProvider.credential(user.email, senhaAtual);
+  await reauthenticateWithCredential(user, credential);
+  await updatePassword(user, novaSenha);
 }
 
 // Chama callback(user, perfil) quando autenticado; redireciona pra index.html se não estiver.
@@ -47,6 +60,7 @@ export function redirectIfLoggedIn() {
 export function renderTopbar(activePage, perfil) {
   const links = [{ href: "quadro.html", label: "Quadro" }];
   if (perfil.isAdmin) links.push({ href: "admin.html", label: "Administração" });
+  links.push({ href: "conta.html", label: "Minha Conta" });
 
   const nav = el(
     "nav",

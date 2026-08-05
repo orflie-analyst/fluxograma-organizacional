@@ -11,6 +11,13 @@ import { clear, el } from "./dom.js";
 const SVG_NS = "http://www.w3.org/2000/svg";
 const quadroRef = doc(db, "quadro", "principal");
 
+const ROTULOS_PROMPT = {
+  conta: "Nome da conta/empresa:",
+  sdr: "Nome do SDR:",
+  bdr: "Nome do BDR:",
+  closer: "Nome do Closer:",
+};
+
 let estado = { nos: [], conexoes: [] };
 let selecionado = null;
 let arrastando = false;
@@ -20,7 +27,9 @@ requireAuth(async (user, perfil) => {
   renderTopbar("quadro.html", perfil);
 
   document.getElementById("btn-add-conta").addEventListener("click", () => adicionarNo("conta"));
-  document.getElementById("btn-add-operador").addEventListener("click", () => adicionarNo("operador"));
+  document.getElementById("btn-add-sdr").addEventListener("click", () => adicionarNo("sdr"));
+  document.getElementById("btn-add-bdr").addEventListener("click", () => adicionarNo("bdr"));
+  document.getElementById("btn-add-closer").addEventListener("click", () => adicionarNo("closer"));
 
   onSnapshot(quadroRef, (snap) => {
     const dados = snap.data() || {};
@@ -30,7 +39,7 @@ requireAuth(async (user, perfil) => {
 });
 
 function adicionarNo(tipo) {
-  const rotulo = window.prompt(tipo === "conta" ? "Nome da conta/empresa:" : "Nome do operador:");
+  const rotulo = window.prompt(ROTULOS_PROMPT[tipo] || "Nome:");
   if (!rotulo || !rotulo.trim()) return;
   estado.nos.push({
     id: crypto.randomUUID(),

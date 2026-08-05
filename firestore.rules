@@ -33,10 +33,10 @@ service cloud.firestore {
       allow delete: if souAdmin();
     }
 
-    // Quadro compartilhado: qualquer usuário autenticado e ativo pode ler/editar —
-    // não há necessidade de granularidade por usuário, já que só o admin cadastra
-    // quem tem conta aqui.
-    match /quadro/{docId} {
+    // Quadros (múltiplos, um por "aba"): qualquer usuário autenticado e ativo pode
+    // listar/ler/editar/criar/excluir — não há necessidade de granularidade por
+    // usuário, já que só o admin cadastra quem tem conta aqui.
+    match /quadros/{quadroId} {
       allow read, write: if souUsuarioAtivo();
     }
   }

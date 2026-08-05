@@ -244,6 +244,65 @@ table.admin-table td {
 
 /* Quadro (fluxograma) */
 
+.quadro-abas {
+  display: flex;
+  gap: 0.4rem;
+  align-items: center;
+  flex-wrap: wrap;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.aba-quadro {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  color: var(--text-muted);
+  padding: 0.35rem 0.5rem 0.35rem 0.75rem;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.aba-quadro.ativa {
+  color: var(--primary);
+  border-color: var(--primary);
+  font-weight: 600;
+}
+
+.aba-quadro .btn-remover-aba {
+  width: 16px;
+  height: 16px;
+  line-height: 14px;
+  text-align: center;
+  border-radius: 50%;
+  background: transparent;
+  color: inherit;
+  font-size: 0.7rem;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+}
+
+.aba-quadro .btn-remover-aba:hover { background: var(--danger); color: #fff; }
+
+.aba-nova {
+  background: transparent;
+  border: 1px dashed var(--border);
+  border-radius: 6px;
+  color: var(--text-muted);
+  width: 30px;
+  height: 30px;
+  cursor: pointer;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.aba-nova:hover { color: var(--primary); border-color: var(--primary); }
+
 .quadro-toolbar {
   display: flex;
   gap: 0.6rem;

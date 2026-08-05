@@ -1,0 +1,43 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    function logado() {
+      return request.auth != null;
+    }
+
+    function meuUsuario() {
+      return get(/databases/$(database)/documents/usuarios/$(request.auth.uid)).data;
+    }
+
+    function souAdmin() {
+      return logado() &&
+        exists(/databases/$(database)/documents/usuarios/$(request.auth.uid)) &&
+        meuUsuario().isAdmin == true;
+    }
+
+    function souUsuarioAtivo() {
+      return logado() &&
+        exists(/databases/$(database)/documents/usuarios/$(request.auth.uid)) &&
+        meuUsuario().ativo != false;
+    }
+
+    match /usuarios/{uid} {
+      allow read: if logado() && (request.auth.uid == uid || souAdmin());
+      // Sem auto-cadastro aqui — só admin cria usuário (ver CONTEXT.md).
+      allow create: if souAdmin();
+      allow update: if souAdmin() ||
+        (logado() && request.auth.uid == uid &&
+          request.resource.data.isAdmin == resource.data.isAdmin);
+      allow delete: if souAdmin();
+    }
+
+    // Quadro compartilhado: qualquer usuário autenticado e ativo pode ler/editar —
+    // não há necessidade de granularidade por usuário, já que só o admin cadastra
+    // quem tem conta aqui.
+    match /quadro/{docId} {
+      allow read, write: if souUsuarioAtivo();
+    }
+  }
+}

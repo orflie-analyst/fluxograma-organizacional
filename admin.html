@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Administração · Fluxograma Organizacional Orflie</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<main id="conteudo">
+  <div class="card">
+    <h1>Administração</h1>
+
+    <h2>Usuários</h2>
+    <table class="admin-table" id="tabela-usuarios">
+      <thead><tr><th>Nome</th><th>Email</th><th>Admin</th><th>Status</th><th></th></tr></thead>
+      <tbody></tbody>
+    </table>
+  </div>
+
+  <div class="card hidden" id="card-editar-usuario">
+    <h2>Editar usuário</h2>
+    <p class="meta" id="editar-usuario-email"></p>
+    <form id="form-editar-usuario">
+      <label for="e-nome">Nome</label>
+      <input type="text" id="e-nome" required maxlength="100" />
+
+      <div class="checkbox-row">
+        <input type="checkbox" id="e-admin" />
+        <label for="e-admin" style="margin:0;">É administrador</label>
+      </div>
+      <div class="checkbox-row">
+        <input type="checkbox" id="e-ativo" />
+        <label for="e-ativo" style="margin:0;">Conta ativa</label>
+      </div>
+
+      <button class="btn" type="submit" id="btn-salvar-usuario">Salvar</button>
+      <button class="btn secondary" type="button" id="btn-cancelar-edicao">Cancelar</button>
+      <p class="erro hidden" id="erro-editar-usuario"></p>
+    </form>
+  </div>
+
+  <div class="card">
+    <h2>Criar novo usuário</h2>
+    <form id="form-usuario">
+      <label for="u-nome">Nome</label>
+      <input type="text" id="u-nome" required maxlength="100" />
+
+      <label for="u-email">Email</label>
+      <input type="email" id="u-email" required />
+
+      <label for="u-senha">Senha inicial</label>
+      <input type="text" id="u-senha" required minlength="6" placeholder="Repasse ao colaborador por fora" />
+
+      <div class="checkbox-row">
+        <input type="checkbox" id="u-admin" />
+        <label for="u-admin" style="margin:0;">É administrador</label>
+      </div>
+
+      <button class="btn" type="submit" id="btn-criar-usuario">Criar usuário</button>
+      <p class="erro hidden" id="erro-usuario"></p>
+      <p class="hidden" id="sucesso-usuario" style="color: var(--accent); font-size:0.9rem; margin-top:0.75rem;"></p>
+    </form>
+  </div>
+</main>
+
+<script type="module" src="app/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,351 @@
+:root {
+  --primary: #f5821f;
+  --primary-dark: #d5690f;
+  --accent: #2f8f5b;
+  --bg: #0a0a0a;
+  --surface: #161616;
+  --border: #2c2c2c;
+  --text: #f2f2f2;
+  --text-muted: #9a9a9a;
+  --danger: #e5534b;
+  --radius: 8px;
+  font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+a { color: var(--primary); }
+
+header.topbar {
+  background: #000;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.75rem 1.5rem;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  border-bottom: 1px solid var(--border);
+}
+
+header.topbar .brand {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  text-decoration: none;
+}
+
+header.topbar .brand img {
+  height: 28px;
+  width: auto;
+  display: block;
+}
+
+header.topbar .brand span {
+  font-weight: 600;
+  font-size: 1rem;
+  letter-spacing: 0.02em;
+  color: #f2f2f2;
+}
+
+header.topbar nav {
+  display: flex;
+  gap: 1.25rem;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+header.topbar nav a {
+  color: #cfcfcf;
+  text-decoration: none;
+  font-size: 0.95rem;
+}
+
+header.topbar nav a:hover,
+header.topbar nav a.active {
+  color: var(--primary);
+  text-decoration: underline;
+}
+
+header.topbar #usuario-nome {
+  color: #8a8a8a;
+  font-size: 0.85rem;
+}
+
+header.topbar button.link-btn {
+  background: none;
+  border: none;
+  color: #cfcfcf;
+  cursor: pointer;
+  font-size: 0.9rem;
+  padding: 0;
+  text-decoration: underline;
+}
+
+main {
+  flex: 1;
+  width: 100%;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1.5rem 1rem 3rem;
+}
+
+main.main-largo { max-width: 1200px; }
+
+.login-wrap {
+  margin: auto;
+  width: 100%;
+  max-width: 380px;
+  padding: 2rem 1rem;
+}
+
+.login-logo {
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+.login-logo img {
+  height: 48px;
+  width: auto;
+}
+
+.login-logo p {
+  margin: 0.5rem 0 0;
+  color: var(--text-muted);
+  font-size: 0.9rem;
+  letter-spacing: 0.02em;
+}
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.5rem;
+  margin-bottom: 1.25rem;
+}
+
+h1 { font-size: 1.4rem; margin: 0 0 1rem; }
+h2 { font-size: 1.1rem; margin: 0 0 0.75rem; }
+
+label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin: 0.9rem 0 0.3rem;
+  color: var(--text-muted);
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+select,
+textarea {
+  width: 100%;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-size: 0.95rem;
+  font-family: inherit;
+  background: #0d0d0d;
+  color: var(--text);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #6b6b6b;
+}
+
+select option {
+  background: #161616;
+  color: var(--text);
+}
+
+textarea { resize: vertical; min-height: 80px; }
+
+button.btn {
+  display: inline-block;
+  background: var(--primary);
+  color: #0a0a0a;
+  border: none;
+  border-radius: 6px;
+  padding: 0.6rem 1.1rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 1rem;
+}
+
+button.btn:hover { background: var(--primary-dark); }
+
+button.btn.secondary {
+  background: transparent;
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  font-weight: 400;
+}
+
+button.btn.secondary:hover { background: rgba(245, 130, 31, 0.1); }
+
+button.btn.danger { background: var(--danger); }
+
+button.btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.erro {
+  color: var(--danger);
+  font-size: 0.9rem;
+  margin-top: 0.75rem;
+}
+
+.aviso-vazio {
+  color: var(--text-muted);
+  font-style: italic;
+  padding: 1rem 0;
+}
+
+table.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+table.admin-table th,
+table.admin-table td {
+  text-align: left;
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.checkbox-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 0.4rem 0;
+}
+
+.checkbox-row input { width: auto; }
+
+.hidden { display: none !important; }
+
+/* Quadro (fluxograma) */
+
+.quadro-toolbar {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.quadro-toolbar .legenda {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+  margin-left: auto;
+}
+
+.quadro-toolbar .legenda .swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 3px;
+  margin-right: 0.3rem;
+  vertical-align: middle;
+}
+
+.quadro-wrap {
+  position: relative;
+  width: 100%;
+  height: 70vh;
+  min-height: 420px;
+  overflow: auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background:
+    linear-gradient(var(--surface), var(--surface)),
+    repeating-linear-gradient(0deg, #202020 0, #202020 1px, transparent 1px, transparent 32px),
+    repeating-linear-gradient(90deg, #202020 0, #202020 1px, transparent 1px, transparent 32px);
+}
+
+.quadro-canvas {
+  position: relative;
+  width: 1800px;
+  height: 1200px;
+}
+
+.svg-conexoes {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+
+.svg-conexoes line {
+  stroke: var(--text-muted);
+  stroke-width: 2;
+}
+
+.no {
+  position: absolute;
+  min-width: 120px;
+  max-width: 220px;
+  padding: 0.5rem 0.7rem;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  cursor: grab;
+  user-select: none;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.4);
+  border: 2px solid transparent;
+}
+
+.no:active { cursor: grabbing; }
+
+.no.conta {
+  background: #1c140a;
+  border-color: var(--primary);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+.no.operador {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.no.selecionado {
+  border-color: #fff;
+  box-shadow: 0 0 0 2px rgba(255, 255, 255, 0.4);
+}
+
+.no .btn-remover {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 18px;
+  height: 18px;
+  line-height: 16px;
+  text-align: center;
+  border-radius: 50%;
+  background: var(--danger);
+  color: #fff;
+  font-size: 0.7rem;
+  cursor: pointer;
+  border: none;
+  padding: 0;
+}

@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Quadro · Fluxograma Organizacional Orflie</title>
+<link rel="stylesheet" href="style.css" />
+</head>
+<body>
+<main class="main-largo">
+  <div class="card">
+    <h1>Quadro de Atribuições</h1>
+    <div class="quadro-toolbar">
+      <button class="btn" type="button" id="btn-add-conta">+ Conta</button>
+      <button class="btn secondary" type="button" id="btn-add-operador">+ Operador</button>
+      <span class="legenda">
+        <span><span class="swatch" style="background: var(--primary);"></span>Conta</span>
+        <span><span class="swatch" style="background: var(--surface); border: 1px solid var(--border);"></span>Operador</span>
+      </span>
+    </div>
+    <p style="font-size: 0.8rem; color: var(--text-muted); margin: -0.5rem 0 1rem;">
+      Arraste os quadrados para posicionar. Clique em um e depois em outro pra conectar (ou desconectar).
+    </p>
+    <div class="quadro-wrap" id="quadro-wrap">
+      <div class="quadro-canvas" id="quadro-canvas">
+        <svg class="svg-conexoes" id="svg-conexoes"></svg>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script type="module" src="app/quadro.js"></script>
+</body>
+</html>

@@ -62,13 +62,12 @@ export function renderTopbar(activePage, perfil) {
   if (perfil.isAdmin) links.push({ href: "admin.html", label: "Administração" });
   links.push({ href: "conta.html", label: "Minha Conta" });
 
-  const nav = el(
-    "nav",
-    {},
-    links.map((l) =>
+  const nav = el("nav", {}, [
+    el("a", { href: "https://orflie-analyst.github.io/central/" }, "← Central"),
+    ...links.map((l) =>
       el("a", { href: l.href, class: l.href === activePage ? "active" : "" }, l.label)
-    )
-  );
+    ),
+  ]);
   nav.appendChild(el("span", { id: "usuario-nome" }, perfil.nome || ""));
   nav.appendChild(
     el("button", { class: "link-btn", type: "button", onclick: () => logout().then(() => (window.location.href = "index.html")) }, "Sair")

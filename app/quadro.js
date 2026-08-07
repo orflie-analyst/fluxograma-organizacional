@@ -16,13 +16,10 @@ import { clear, el } from "./dom.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 const CHAVE_QUADRO_ATIVO = "fluxograma_quadro_ativo";
+const TIPOS = ["conta", "sdr", "bdr", "closer"];
+const CATEGORIAS_PADRAO = { conta: "Conta", sdr: "SDR", bdr: "BDR", closer: "Closer" };
 
-const ROTULOS_PROMPT = {
-  conta: "Nome da conta/empresa:",
-  sdr: "Nome do SDR:",
-  bdr: "Nome do BDR:",
-  closer: "Nome do Closer:",
-};
+let categorias = { ...CATEGORIAS_PADRAO };
 
 let quadrosCache = [];
 let quadroAtualId = null;
@@ -37,10 +34,14 @@ let elementosPorId = {};
 requireAuth(async (user, perfil) => {
   renderTopbar("quadro.html", perfil);
 
-  document.getElementById("btn-add-conta").addEventListener("click", () => adicionarNo("conta"));
-  document.getElementById("btn-add-sdr").addEventListener("click", () => adicionarNo("sdr"));
-  document.getElementById("btn-add-bdr").addEventListener("click", () => adicionarNo("bdr"));
-  document.getElementById("btn-add-closer").addEventListener("click", () => adicionarNo("closer"));
+  renderToolbar();
+  renderLegenda();
+
+  onSnapshot(doc(db, "config", "categorias"), (snap) => {
+    categorias = { ...CATEGORIAS_PADRAO, ...(snap.data() || {}) };
+    renderToolbar();
+    renderLegenda();
+  });
 
   const q = query(collection(db, "quadros"), orderBy("criadoEm", "asc"));
   onSnapshot(q, async (snap) => {
@@ -162,8 +163,46 @@ function renderAbas() {
   );
 }
 
+function renderToolbar() {
+  const container = document.getElementById("quadro-toolbar");
+  clear(container);
+  for (const tipo of TIPOS) {
+    container.appendChild(
+      el(
+        "button",
+        { class: "btn-no-tipo", type: "button", onclick: () => adicionarNo(tipo) },
+        [el("span", { class: `swatch ${tipo}` }), `+ ${categorias[tipo]}`]
+      )
+    );
+  }
+}
+
+function renderLegenda() {
+  const container = document.getElementById("legenda-lista");
+  clear(container);
+  for (const tipo of TIPOS) {
+    container.appendChild(
+      el(
+        "div",
+        {
+          class: "legenda-item",
+          title: "Duplo clique pra renomear",
+          ondblclick: () => renomearCategoria(tipo),
+        },
+        [el("span", { class: `swatch ${tipo}` }), categorias[tipo]]
+      )
+    );
+  }
+}
+
+async function renomearCategoria(tipo) {
+  const novo = window.prompt("Novo nome pra essa categoria:", categorias[tipo]);
+  if (!novo || !novo.trim() || novo.trim() === categorias[tipo]) return;
+  await setDoc(doc(db, "config", "categorias"), { [tipo]: novo.trim() }, { merge: true });
+}
+
 function adicionarNo(tipo) {
-  const rotulo = window.prompt(ROTULOS_PROMPT[tipo] || "Nome:");
+  const rotulo = window.prompt(`Nome do novo item (${categorias[tipo]}):`);
   if (!rotulo || !rotulo.trim()) return;
   estado.nos.push({
     id: crypto.randomUUID(),
@@ -172,6 +211,16 @@ function adicionarNo(tipo) {
     x: 40 + Math.round(Math.random() * 120),
     y: 40 + Math.round(Math.random() * 120),
   });
+  salvarEstado();
+  renderQuadro();
+}
+
+async function renomearNo(id, labelAtual) {
+  const novoLabel = window.prompt("Novo nome:", labelAtual);
+  if (!novoLabel || !novoLabel.trim() || novoLabel.trim() === labelAtual) return;
+  const no = estado.nos.find((n) => n.id === id);
+  if (!no) return;
+  no.label = novoLabel.trim();
   salvarEstado();
   renderQuadro();
 }
@@ -238,7 +287,14 @@ function renderQuadro() {
     const classeSelecionado = selecionado === no.id ? " selecionado" : "";
     const nodeEl = el(
       "div",
-      { class: `no ${no.tipo}${classeSelecionado}`, style: `left:${no.x}px; top:${no.y}px;` },
+      {
+        class: `no ${no.tipo}${classeSelecionado}`,
+        style: `left:${no.x}px; top:${no.y}px;`,
+        ondblclick: (e) => {
+          e.stopPropagation();
+          renomearNo(no.id, no.label);
+        },
+      },
       [no.label, btnRemover]
     );
     configurarArrasto(nodeEl, no);

@@ -14,14 +14,10 @@
     <p style="font-size: 0.75rem; color: var(--text-muted); margin: -0.5rem 0 1rem;">
       Clique numa aba pra trocar de quadro. Duplo clique no nome renomeia.
     </p>
-    <div class="quadro-toolbar">
-      <button class="btn-no-tipo" type="button" id="btn-add-conta"><span class="swatch conta"></span>+ Conta</button>
-      <button class="btn-no-tipo" type="button" id="btn-add-sdr"><span class="swatch sdr"></span>+ SDR</button>
-      <button class="btn-no-tipo" type="button" id="btn-add-bdr"><span class="swatch bdr"></span>+ BDR</button>
-      <button class="btn-no-tipo" type="button" id="btn-add-closer"><span class="swatch closer"></span>+ Closer</button>
-    </div>
+    <div class="quadro-toolbar" id="quadro-toolbar"></div>
     <p style="font-size: 0.8rem; color: var(--text-muted); margin: -0.5rem 0 1rem;">
-      Arraste os quadrados para posicionar. Clique em um e depois em outro pra conectar (ou desconectar).
+      Arraste os quadrados para posicionar. Clique em um e depois em outro pra conectar
+      (ou desconectar). Duplo clique num item do quadro, ou na legenda, pra renomear.
     </p>
     <div class="quadro-area">
       <div class="quadro-wrap" id="quadro-wrap">
@@ -31,10 +27,7 @@
       </div>
       <aside class="quadro-legenda">
         <h2>Legenda</h2>
-        <div class="legenda-item"><span class="swatch conta"></span>Conta</div>
-        <div class="legenda-item"><span class="swatch sdr"></span>SDR</div>
-        <div class="legenda-item"><span class="swatch bdr"></span>BDR</div>
-        <div class="legenda-item"><span class="swatch closer"></span>Closer</div>
+        <div id="legenda-lista"></div>
       </aside>
     </div>
   </div>

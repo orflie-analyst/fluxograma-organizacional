@@ -39,5 +39,11 @@ service cloud.firestore {
     match /quadros/{quadroId} {
       allow read, write: if souUsuarioAtivo();
     }
+
+    // Nomes de exibição das categorias (Conta/SDR/BDR/Closer), compartilhados por
+    // todos os quadros — mesmo nível de permissão, qualquer usuário ativo edita.
+    match /config/{docId} {
+      allow read, write: if souUsuarioAtivo();
+    }
   }
 }

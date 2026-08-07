@@ -3,6 +3,7 @@ import {
   doc,
   addDoc,
   deleteDoc,
+  getDocs,
   updateDoc,
   onSnapshot,
   setDoc,
@@ -16,10 +17,32 @@ import { clear, el } from "./dom.js";
 
 const SVG_NS = "http://www.w3.org/2000/svg";
 const CHAVE_QUADRO_ATIVO = "fluxograma_quadro_ativo";
-const TIPOS = ["conta", "sdr", "bdr", "closer"];
-const CATEGORIAS_PADRAO = { conta: "Conta", sdr: "SDR", bdr: "BDR", closer: "Closer" };
 
-let categorias = { ...CATEGORIAS_PADRAO };
+// Categorias padrão, usadas só pra migrar o doc antigo (config/categorias no
+// formato {conta: "Conta", ...}) pra uma lista de categorias com cor própria,
+// e como fallback caso o doc ainda não exista.
+const CATEGORIAS_PADRAO = [
+  { id: "conta", nome: "Conta", cor: "#f5821f" },
+  { id: "sdr", nome: "SDR", cor: "#3b82f6" },
+  { id: "bdr", nome: "BDR", cor: "#a78bfa" },
+  { id: "closer", nome: "Closer", cor: "#22c55e" },
+];
+
+// Cores sugeridas pra categorias novas — escolhe a primeira ainda não usada.
+const PALETA_CORES = [
+  "#f5821f",
+  "#3b82f6",
+  "#a78bfa",
+  "#22c55e",
+  "#ef4444",
+  "#eab308",
+  "#06b6d4",
+  "#ec4899",
+  "#84cc16",
+  "#f97316",
+];
+
+let categorias = CATEGORIAS_PADRAO;
 
 let quadrosCache = [];
 let quadroAtualId = null;
@@ -38,9 +61,19 @@ requireAuth(async (user, perfil) => {
   renderLegenda();
 
   onSnapshot(doc(db, "config", "categorias"), (snap) => {
-    categorias = { ...CATEGORIAS_PADRAO, ...(snap.data() || {}) };
+    const dados = snap.data();
+    if (dados && Array.isArray(dados.lista)) {
+      categorias = dados.lista;
+    } else {
+      // Doc antigo (formato chave->nome) ou inexistente: migra pro novo formato,
+      // preservando qualquer nome já customizado.
+      const antigas = dados || {};
+      categorias = CATEGORIAS_PADRAO.map((c) => ({ ...c, nome: antigas[c.id] || c.nome }));
+      setDoc(doc(db, "config", "categorias"), { lista: categorias });
+    }
     renderToolbar();
     renderLegenda();
+    renderQuadro();
   });
 
   const q = query(collection(db, "quadros"), orderBy("criadoEm", "asc"));
@@ -166,12 +199,12 @@ function renderAbas() {
 function renderToolbar() {
   const container = document.getElementById("quadro-toolbar");
   clear(container);
-  for (const tipo of TIPOS) {
+  for (const cat of categorias) {
     container.appendChild(
       el(
         "button",
-        { class: "btn-no-tipo", type: "button", onclick: () => adicionarNo(tipo) },
-        [el("span", { class: `swatch ${tipo}` }), `+ ${categorias[tipo]}`]
+        { class: "btn-no-tipo", type: "button", onclick: () => adicionarNo(cat.id) },
+        [el("span", { class: "swatch", style: `background:${cat.cor};` }), `+ ${cat.nome}`]
       )
     );
   }
@@ -180,29 +213,80 @@ function renderToolbar() {
 function renderLegenda() {
   const container = document.getElementById("legenda-lista");
   clear(container);
-  for (const tipo of TIPOS) {
+  for (const cat of categorias) {
+    const btnRemover = el(
+      "button",
+      {
+        class: "btn-remover-aba",
+        type: "button",
+        title: "Excluir categoria",
+        onclick: (e) => {
+          e.stopPropagation();
+          excluirCategoria(cat.id, cat.nome);
+        },
+      },
+      "×"
+    );
     container.appendChild(
       el(
         "div",
-        {
-          class: "legenda-item",
-          title: "Duplo clique pra renomear",
-          ondblclick: () => renomearCategoria(tipo),
-        },
-        [el("span", { class: `swatch ${tipo}` }), categorias[tipo]]
+        { class: "legenda-item", title: "Duplo clique pra renomear" },
+        [
+          el("span", { class: "swatch", style: `background:${cat.cor};` }),
+          el(
+            "span",
+            { ondblclick: (e) => { e.stopPropagation(); renomearCategoria(cat.id, cat.nome); } },
+            cat.nome
+          ),
+          btnRemover,
+        ]
       )
     );
   }
+  container.appendChild(
+    el("button", { class: "aba-nova", type: "button", title: "Nova categoria", onclick: novaCategoria }, "+")
+  );
 }
 
-async function renomearCategoria(tipo) {
-  const novo = window.prompt("Novo nome pra essa categoria:", categorias[tipo]);
-  if (!novo || !novo.trim() || novo.trim() === categorias[tipo]) return;
-  await setDoc(doc(db, "config", "categorias"), { [tipo]: novo.trim() }, { merge: true });
+async function salvarCategorias(novaLista) {
+  categorias = novaLista;
+  await setDoc(doc(db, "config", "categorias"), { lista: novaLista });
+}
+
+async function novaCategoria() {
+  const nome = window.prompt("Nome da nova categoria:");
+  if (!nome || !nome.trim()) return;
+  const corUsada = new Set(categorias.map((c) => c.cor));
+  const cor = PALETA_CORES.find((c) => !corUsada.has(c)) || PALETA_CORES[categorias.length % PALETA_CORES.length];
+  await salvarCategorias([...categorias, { id: crypto.randomUUID(), nome: nome.trim(), cor }]);
+}
+
+async function renomearCategoria(id, nomeAtual) {
+  const novo = window.prompt("Novo nome pra essa categoria:", nomeAtual);
+  if (!novo || !novo.trim() || novo.trim() === nomeAtual) return;
+  await salvarCategorias(categorias.map((c) => (c.id === id ? { ...c, nome: novo.trim() } : c)));
+}
+
+async function excluirCategoria(id, nome) {
+  if (categorias.length <= 1) {
+    window.alert("Precisa manter pelo menos uma categoria.");
+    return;
+  }
+  const todosQuadros = await getDocs(collection(db, "quadros"));
+  const emUso = todosQuadros.docs.some((d) => (d.data().nos || []).some((n) => n.tipo === id));
+  if (emUso) {
+    window.alert(
+      `Não dá pra excluir "${nome}" — ainda tem item(ns) usando essa categoria em algum quadro. Renomeie ou exclua esses itens primeiro.`
+    );
+    return;
+  }
+  if (!window.confirm(`Excluir a categoria "${nome}"?`)) return;
+  await salvarCategorias(categorias.filter((c) => c.id !== id));
 }
 
 function adicionarNo(tipo) {
-  const rotulo = window.prompt(`Nome do novo item (${categorias[tipo]}):`);
+  const cat = categorias.find((c) => c.id === tipo);
+  const rotulo = window.prompt(`Nome do novo item (${cat?.nome || "categoria"}):`);
   if (!rotulo || !rotulo.trim()) return;
   estado.nos.push({
     id: crypto.randomUUID(),
@@ -266,12 +350,22 @@ async function salvarEstado() {
   );
 }
 
+function hexParaRgba(hex, alpha) {
+  const n = parseInt(hex.replace("#", ""), 16);
+  const r = (n >> 16) & 255;
+  const g = (n >> 8) & 255;
+  const b = n & 255;
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 function renderQuadro() {
   const canvas = document.getElementById("quadro-canvas");
   canvas.querySelectorAll(".no").forEach((n) => n.remove());
   elementosPorId = {};
 
   for (const no of estado.nos) {
+    const cat = categorias.find((c) => c.id === no.tipo);
+    const cor = cat?.cor || "#888888";
     const btnRemover = el(
       "button",
       {
@@ -288,8 +382,8 @@ function renderQuadro() {
     const nodeEl = el(
       "div",
       {
-        class: `no ${no.tipo}${classeSelecionado}`,
-        style: `left:${no.x}px; top:${no.y}px;`,
+        class: `no${classeSelecionado}`,
+        style: `left:${no.x}px; top:${no.y}px; --cor-categoria:${cor}; --fundo-categoria:${hexParaRgba(cor, 0.15)};`,
         ondblclick: (e) => {
           e.stopPropagation();
           renomearNo(no.id, no.label);

@@ -350,12 +350,18 @@ async function salvarEstado() {
   );
 }
 
-function hexParaRgba(hex, alpha) {
+// Mistura a cor da categoria com o fundo escuro do quadro numa cor sólida
+// (opaca) — usar rgba com alpha baixo deixava o quadrado translúcido e as
+// linhas de conexão apareciam por cima do texto.
+function corDeFundoDoNo(hex) {
   const n = parseInt(hex.replace("#", ""), 16);
   const r = (n >> 16) & 255;
   const g = (n >> 8) & 255;
   const b = n & 255;
-  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  const peso = 0.16;
+  const fundo = 0x16; // var(--surface) #161616
+  const misturar = (c) => Math.round(c * peso + fundo * (1 - peso));
+  return `rgb(${misturar(r)}, ${misturar(g)}, ${misturar(b)})`;
 }
 
 function renderQuadro() {
@@ -383,7 +389,7 @@ function renderQuadro() {
       "div",
       {
         class: `no${classeSelecionado}`,
-        style: `left:${no.x}px; top:${no.y}px; --cor-categoria:${cor}; --fundo-categoria:${hexParaRgba(cor, 0.15)};`,
+        style: `left:${no.x}px; top:${no.y}px; --cor-categoria:${cor}; --fundo-categoria:${corDeFundoDoNo(cor)};`,
         ondblclick: (e) => {
           e.stopPropagation();
           renomearNo(no.id, no.label);

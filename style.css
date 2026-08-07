@@ -103,7 +103,7 @@ main {
   padding: 1.5rem 1rem 3rem;
 }
 
-main.main-largo { max-width: 1200px; }
+main.main-largo { max-width: 1600px; }
 
 .login-wrap {
   margin: auto;
@@ -349,8 +349,8 @@ table.admin-table td {
   position: relative;
   flex: 1;
   min-width: 0;
-  height: 70vh;
-  min-height: 420px;
+  height: 85vh;
+  min-height: 600px;
   overflow: auto;
   border: 1px solid var(--border);
   border-radius: var(--radius);
@@ -382,8 +382,8 @@ table.admin-table td {
 
 .quadro-canvas {
   position: relative;
-  width: 1800px;
-  height: 1200px;
+  width: 3200px;
+  height: 2200px;
 }
 
 .svg-conexoes {

@@ -1,3 +1,6 @@
+> ⚠️ **DESATIVADO em 2026-09-08.** GitHub Pages desligado (site fora do ar), repo e
+> dados no Firestore (`orflie-fluxograma`, projeto isolado) mantidos intactos.
+
 # Fluxograma Organizacional — Orflie
 
 Quadro interativo pra reuniões de diretoria: caixas de "Conta" (empresa cliente) e de
